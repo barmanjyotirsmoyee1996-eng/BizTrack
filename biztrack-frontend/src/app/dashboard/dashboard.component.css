@@ -1,0 +1,84 @@
+.stat-card {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02) !important;
+}
+
+.icon-shape {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bg-soft-primary {
+  background-color: rgba(79, 70, 229, 0.1) !important;
+  color: #4f46e5 !important;
+}
+.bg-soft-purple {
+  background-color: rgba(139, 92, 246, 0.1) !important;
+  color: #8b5cf6 !important;
+}
+.bg-soft-warning {
+  background-color: rgba(245, 158, 11, 0.1) !important;
+  color: #f59e0b !important;
+}
+.bg-soft-success {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+  color: #10b981 !important;
+}
+.bg-soft-info {
+  background-color: rgba(14, 165, 233, 0.1) !important;
+  color: #0ea5e9 !important;
+}
+
+/* Banner bubbles decorative styles */
+.banner-bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+}
+.bubble-1 {
+  width: 250px;
+  height: 250px;
+  top: -120px;
+  right: -50px;
+}
+.bubble-2 {
+  width: 150px;
+  height: 150px;
+  bottom: -70px;
+  right: 150px;
+}
+
+.table td {
+  padding-top: 0.95rem;
+  padding-bottom: 0.95rem;
+}
+
+/* Quick Action card highlights */
+.btn-light.text-start {
+  border-color: var(--border-light) !important;
+  transition: all 0.2s ease-in-out;
+  background-color: #ffffff;
+}
+.btn-light.text-start:hover {
+  transform: translateX(3px);
+  border-color: #cbd5e1 !important;
+  background-color: #f8fafc;
+}
+.btn-light.text-start .icon-shape {
+  flex-shrink: 0;
+}
+
+.spin {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

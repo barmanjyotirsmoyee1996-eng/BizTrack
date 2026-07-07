@@ -1,0 +1,10 @@
+.modal.show {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.table td {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.modal-backdrop.show {
+  opacity: 0.4;
+}

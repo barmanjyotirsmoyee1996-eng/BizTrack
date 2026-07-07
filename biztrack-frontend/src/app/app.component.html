@@ -1,0 +1,105 @@
+<div *ngIf="isLoggedIn(); else anonymous" class="app-container d-flex">
+  <!-- Left Sidebar -->
+  <aside class="sidebar bg-dark text-white" [class.collapsed]="sidebarCollapsed">
+    <div class="sidebar-header d-flex align-items-center justify-content-between p-3">
+      <h4 class="fw-bold mb-0 text-primary d-flex align-items-center gap-2">
+        <i class="bi bi-briefcase-fill"></i>
+        <span class="logo-text text-white">BizTrack</span>
+      </h4>
+      <button (click)="toggleSidebar()" class="btn btn-dark btn-sm d-md-none"><i class="bi bi-x-lg"></i></button>
+    </div>
+    
+    <div class="nav-container flex-grow-1 p-3">
+      <ul class="nav nav-pills flex-column gap-2">
+        <li class="nav-item">
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-link text-white-50 d-flex align-items-center gap-2">
+            <i class="bi bi-speedometer2"></i>
+            <span class="nav-text">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/clients" routerLinkActive="active" class="nav-link text-white-50 d-flex align-items-center gap-2">
+            <i class="bi bi-people-fill"></i>
+            <span class="nav-text">Clients</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/meetings" routerLinkActive="active" class="nav-link text-white-50 d-flex align-items-center gap-2">
+            <i class="bi bi-calendar3"></i>
+            <span class="nav-text">Meetings</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/expenses" routerLinkActive="active" class="nav-link text-white-50 d-flex align-items-center gap-2">
+            <i class="bi bi-cash-stack"></i>
+            <span class="nav-text">Expenses</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="sidebar-footer p-3 border-top border-secondary">
+      <div class="d-flex align-items-center gap-2">
+        <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold small">
+          {{ currentUser?.name ? currentUser.name[0].toUpperCase() : 'U' }}
+        </div>
+        <div class="user-details overflow-hidden">
+          <div class="text-white text-truncate fw-semibold small">{{ currentUser?.name }}</div>
+          <div class="text-white-50 text-truncate x-small">{{ currentUser?.email }}</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <div class="main-wrapper flex-grow-1 d-flex flex-column min-vh-100">
+    <!-- Top Navbar -->
+    <header class="navbar navbar-expand bg-white border-bottom shadow-sm px-4 sticky-top">
+      <button (click)="toggleSidebar()" class="btn btn-light btn-sm me-3 sidebar-toggle-btn">
+        <i class="bi bi-justify fs-4"></i>
+      </button>
+      <span class="navbar-brand me-auto fw-bold text-dark fs-5">BizTrack System</span>
+      
+      <!-- Profile Dropdown -->
+      <div class="dropdown">
+        <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2 rounded-pill px-3 py-1.5 shadow-sm" type="button" id="userMenuBtn" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-person-circle text-primary fs-5"></i>
+          <span class="d-none d-sm-inline fw-semibold small">{{ currentUser?.name }}</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end border-0 shadow rounded-3 mt-2" aria-labelledby="userMenuBtn">
+          <li>
+            <a class="dropdown-item py-2 text-danger fw-semibold d-flex align-items-center gap-2" href="javascript:void(0)" (click)="logout()">
+              <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </header>
+
+    <!-- Router Outlet -->
+    <main class="content-area bg-light flex-grow-1">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
+
+<ng-template #anonymous>
+  <router-outlet></router-outlet>
+</ng-template>
+
+<!-- Overlay Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000;">
+  <div *ngFor="let toast of toasts; let i = index" class="toast show align-items-center border-0 text-white rounded-3 shadow mb-2" [class]="'bg-' + toast.type" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body fw-semibold">
+        <i class="bi me-2" [ngClass]="{
+          'bi-check-circle-fill': toast.type === 'success',
+          'bi-exclamation-triangle-fill': toast.type === 'danger',
+          'bi-info-circle-fill': toast.type === 'info' || toast.type === 'warning'
+        }"></i>
+        {{ toast.message }}
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="removeToast(i)" aria-label="Close"></button>
+    </div>
+  </div>
+</div>

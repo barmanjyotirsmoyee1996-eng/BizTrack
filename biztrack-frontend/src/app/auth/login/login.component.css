@@ -1,0 +1,16 @@
+.login-wrapper {
+  background: radial-gradient(circle at 10% 20%, rgb(240, 243, 248) 0%, rgb(225, 232, 243) 90%);
+}
+.card {
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+.input-group-text {
+  border-right: none;
+}
+.form-control:focus {
+  box-shadow: none;
+  border-color: #ced4da;
+}
+.input-group .form-control.is-invalid {
+  border-left: 1px solid #dc3545;
+}

@@ -1,0 +1,72 @@
+<div class="login-wrapper d-flex align-items-center justify-content-center min-vh-100 bg-light">
+  <div class="card shadow-lg border-0 rounded-4 overflow-hidden" style="max-width: 440px; width: 100%;">
+    <div class="card-header bg-gradient bg-primary text-white text-center py-4 border-0">
+      <h3 class="fw-bold mb-0">BizTrack</h3>
+      <p class="mb-0 text-white-50">{{ isRegisterMode ? 'Create a new account' : 'Sign in to your account' }}</p>
+    </div>
+    <div class="card-body p-4">
+      <!-- Error Alert -->
+      <div *ngIf="error" class="alert alert-danger d-flex align-items-center" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <div>{{ error }}</div>
+      </div>
+
+      <form [formGroup]="isRegisterMode ? registerForm : loginForm" (ngSubmit)="onSubmit()" novalidate>
+        <!-- Name (Register Only) -->
+        <div *ngIf="isRegisterMode" [formGroup]="registerForm" class="mb-3">
+          <label for="name" class="form-label fw-semibold text-secondary">Full Name</label>
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0 text-secondary"><i class="bi bi-person"></i></span>
+            <input type="text" id="name" formControlName="name" class="form-control border-start-0 ps-0" placeholder="John Doe"
+                   [ngClass]="{ 'is-invalid': submitted && rf['name'].errors }">
+            <div *ngIf="submitted && rf['name'].errors" class="invalid-feedback ps-2">
+              <div *ngIf="rf['name'].errors['required']">Name is required</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+          <label for="email" class="form-label fw-semibold text-secondary">Email Address</label>
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0 text-secondary"><i class="bi bi-envelope"></i></span>
+            <input type="email" id="email" formControlName="email" class="form-control border-start-0 ps-0" placeholder="name@company.com"
+                   [ngClass]="{ 'is-invalid': submitted && (isRegisterMode ? rf['email'].errors : f['email'].errors) }">
+            <div *ngIf="submitted && (isRegisterMode ? rf['email'].errors : f['email'].errors)" class="invalid-feedback ps-2">
+              <div *ngIf="isRegisterMode ? rf['email'].errors!['required'] : f['email'].errors!['required']">Email is required</div>
+              <div *ngIf="isRegisterMode ? rf['email'].errors!['email'] : f['email'].errors!['email']">Enter a valid email address</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="mb-4">
+          <label for="password" class="form-label fw-semibold text-secondary">Password</label>
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0 text-secondary"><i class="bi bi-lock"></i></span>
+            <input type="password" id="password" formControlName="password" class="form-control border-start-0 ps-0" placeholder="••••••••"
+                   [ngClass]="{ 'is-invalid': submitted && (isRegisterMode ? rf['password'].errors : f['password'].errors) }">
+            <div *ngIf="submitted && (isRegisterMode ? rf['password'].errors : f['password'].errors)" class="invalid-feedback ps-2">
+              <div *ngIf="isRegisterMode ? rf['password'].errors!['required'] : f['password'].errors!['required']">Password is required</div>
+              <div *ngIf="isRegisterMode ? rf['password'].errors!['minlength'] : f['password'].errors!['minlength']">Password must be at least 6 characters</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" [disabled]="loading" class="btn btn-primary bg-gradient w-100 py-2.5 rounded-3 fw-semibold shadow-sm d-flex align-items-center justify-content-center">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          {{ isRegisterMode ? 'Sign Up' : 'Sign In' }}
+        </button>
+      </form>
+
+      <!-- Toggle Mode Link -->
+      <div class="text-center mt-4">
+        <span class="text-secondary small">{{ isRegisterMode ? 'Already have an account?' : 'New to BizTrack?' }} </span>
+        <a href="javascript:void(0)" (click)="toggleMode()" class="text-primary small fw-semibold text-decoration-none">
+          {{ isRegisterMode ? 'Sign In' : 'Create an account' }}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+.modal.show {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.table td {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.modal-backdrop.show {
+  opacity: 0.4;
+}
+.badge.bg-purple {
+  background-color: rgba(111, 66, 193, 0.1);
+  color: rgb(111, 66, 193);
+}
+.badge.bg-purple.bg-opacity-10 {
+  background-color: rgba(111, 66, 193, 0.1) !important;
+  color: rgb(111, 66, 193) !important;
+}
