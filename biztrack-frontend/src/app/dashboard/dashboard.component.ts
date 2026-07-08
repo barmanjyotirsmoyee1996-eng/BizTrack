@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DashboardService } from '../services/dashboard.service';
 import { ToastService } from '../services/toast.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,13 +20,18 @@ export class DashboardComponent implements OnInit {
   loading = true;
   expenseBreakdown: { category: string, amount: number, percentage: number }[] = [];
   todayDate = new Date();
+  currentUser: any = null;
 
   constructor(
     private dashboardService: DashboardService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
     this.loadStats();
   }
 
@@ -60,5 +66,12 @@ export class DashboardComponent implements OnInit {
       amount: totals[cat],
       percentage: grandTotal > 0 ? Math.round((totals[cat] / grandTotal) * 100) : 0
     })).sort((a, b) => b.amount - a.amount);
+  }
+
+  getFirstName(): string {
+    if (!this.currentUser || !this.currentUser.name) {
+      return 'User';
+    }
+    return this.currentUser.name.split(' ')[0];
   }
 }

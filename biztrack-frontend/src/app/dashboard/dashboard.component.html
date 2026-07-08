@@ -3,7 +3,7 @@
   <div class="card border-0 bg-gradient text-white rounded-4 p-4 mb-4 shadow-sm relative overflow-hidden position-relative">
     <div class="position-relative z-index-1">
       <p class="text-white-50 small mb-1">{{ todayDate | date:'fullDate' }}</p>
-      <h2 class="fw-bold mb-1">Welcome back, Jyoti!</h2>
+      <h2 class="fw-bold mb-1">Welcome back, {{ getFirstName() }}!</h2>
       <p class="mb-0 text-white-50 opacity-90">Here is your business digest. You have {{ stats.upcoming_meetings_count }} upcoming client meetings scheduled.</p>
     </div>
     <div class="banner-bubble bubble-1"></div>
