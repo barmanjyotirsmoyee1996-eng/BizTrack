@@ -132,6 +132,9 @@
 
 /* Mobile responsive layout */
 @media (max-width: 768px) {
+  .app-container {
+    display: block !important;
+  }
   .sidebar {
     margin-left: -260px;
   }
@@ -140,5 +143,6 @@
   }
   .main-wrapper {
     margin-left: 0 !important;
+    width: 100% !important;
   }
 }
