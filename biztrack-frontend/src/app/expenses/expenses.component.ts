@@ -4,7 +4,7 @@ import { ExpenseService } from '../services/expense.service';
 import { ClientService } from '../services/client.service';
 import { ToastService } from '../services/toast.service';
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-expenses',
@@ -275,7 +275,7 @@ export class ExpensesComponent implements OnInit {
     });
 
     // Draw Table
-    (doc as any).autoTable({
+    autoTable(doc, {
       head: head,
       body: body,
       startY: 44,
