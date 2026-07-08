@@ -51,6 +51,9 @@
     </div>
   </aside>
 
+  <!-- Mobile Sidebar Backdrop Overlay -->
+  <div *ngIf="sidebarCollapsed" (click)="toggleSidebar()" class="sidebar-backdrop d-md-none"></div>
+
   <!-- Main Content Wrapper -->
   <div class="main-wrapper flex-grow-1 d-flex flex-column min-vh-100">
     <!-- Top Navbar -->

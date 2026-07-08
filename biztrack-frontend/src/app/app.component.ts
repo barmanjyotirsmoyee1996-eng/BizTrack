@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { ToastService, Toast } from './services/toast.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -34,6 +35,15 @@ export class AppComponent implements OnInit {
           this.toasts.splice(index, 1);
         }
       }, 3500);
+    });
+
+    // Auto collapse sidebar on mobile route change
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      if (window.innerWidth < 768) {
+        this.sidebarCollapsed = false;
+      }
     });
   }
 
