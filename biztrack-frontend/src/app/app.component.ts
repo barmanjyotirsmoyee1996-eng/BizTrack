@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { ToastService, Toast } from './services/toast.service';
@@ -14,6 +14,8 @@ export class AppComponent implements OnInit {
   sidebarCollapsed = false;
   currentUser: any = null;
   toasts: Toast[] = [];
+  private inactivityTimeout: any;
+  private readonly TIMEOUT_DURATION = 15 * 60 * 1000; // 15 minutes in milliseconds
 
   constructor(
     private authService: AuthService,
@@ -24,6 +26,11 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
+      if (user) {
+        this.resetInactivityTimer();
+      } else {
+        this.clearInactivityTimer();
+      }
     });
 
     this.toastService.toast$.subscribe(toast => {
@@ -70,5 +77,49 @@ export class AppComponent implements OnInit {
 
   removeToast(index: number) {
     this.toasts.splice(index, 1);
+  }
+
+  // Listen to user activity events to reset inactivity timer
+  @HostListener('document:mousemove')
+  @HostListener('document:click')
+  @HostListener('document:keypress')
+  @HostListener('document:scroll')
+  @HostListener('document:touchstart')
+  onUserActivity() {
+    if (this.isLoggedIn()) {
+      this.resetInactivityTimer();
+    }
+  }
+
+  resetInactivityTimer() {
+    this.clearInactivityTimer();
+    if (this.isLoggedIn()) {
+      this.inactivityTimeout = setTimeout(() => {
+        this.handleAutoLogout();
+      }, this.TIMEOUT_DURATION);
+    }
+  }
+
+  clearInactivityTimer() {
+    if (this.inactivityTimeout) {
+      clearTimeout(this.inactivityTimeout);
+    }
+  }
+
+  handleAutoLogout() {
+    this.clearInactivityTimer();
+    if (this.isLoggedIn()) {
+      this.authService.logout().subscribe({
+        next: () => {
+          this.toastService.showWarning('You have been logged out due to inactivity.');
+          this.router.navigate(['/login']);
+        },
+        error: () => {
+          this.authService.clearSession();
+          this.toastService.showWarning('Session expired due to inactivity.');
+          this.router.navigate(['/login']);
+        }
+      });
+    }
   }
 }
