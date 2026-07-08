@@ -11,8 +11,11 @@ export class ExpenseService {
 
   constructor(private http: HttpClient) {}
 
-  getExpenses(page: number = 1, category: string = '', search: string = ''): Observable<any> {
+  getExpenses(page: number = 1, category: string = '', search: string = '', all: boolean = false): Observable<any> {
     let params = new HttpParams().set('page', page.toString());
+    if (all) {
+      params = params.set('all', 'true');
+    }
     if (category) {
       params = params.set('category', category);
     }

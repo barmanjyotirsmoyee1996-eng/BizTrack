@@ -28,7 +28,14 @@ class ExpenseController extends Controller
             });
         }
 
-        $expenses = $query->orderBy('expense_date', 'desc')->paginate(10);
+        // Sort and support returning all records or paginated
+        $query->orderBy('expense_date', 'desc');
+
+        if ($request->has('all') && $request->all == 'true') {
+            return response()->json(['data' => $query->get()]);
+        }
+
+        $expenses = $query->paginate(10);
 
         return response()->json($expenses);
     }

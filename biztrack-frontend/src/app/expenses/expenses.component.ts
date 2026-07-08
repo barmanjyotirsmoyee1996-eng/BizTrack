@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ExpenseService } from '../services/expense.service';
 import { ClientService } from '../services/client.service';
 import { ToastService } from '../services/toast.service';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 @Component({
   selector: 'app-expenses',
@@ -213,5 +215,104 @@ export class ExpensesComponent implements OnInit {
         }
       });
     }
+  }
+
+  downloadPDFReport() {
+    this.loading = true;
+    this.expenseService.getExpenses(1, this.categoryFilter, this.search, true).subscribe({
+      next: (data) => {
+        const allExpenses = data.data;
+        this.generatePDF(allExpenses);
+        this.loading = false;
+      },
+      error: () => {
+        this.toastService.showError('Failed to fetch expenses for PDF report.');
+        this.loading = false;
+      }
+    });
+  }
+
+  generatePDF(expenseList: any[]) {
+    const doc = new jsPDF();
+
+    // Title & Header Section
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20);
+    doc.setTextColor(79, 70, 229); // Indigo theme color
+    doc.text('BizTrack CRM System', 14, 20);
+
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 116, 139);
+    doc.text('Expenses Audit Report', 14, 27);
+    
+    // Add Date
+    const reportDate = new Date().toLocaleDateString('en-US', {
+      year: 'numeric', month: 'long', day: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+    doc.text(`Generated: ${reportDate}`, 14, 34);
+
+    // Draw horizontal line divider
+    doc.setDrawColor(226, 232, 240);
+    doc.setLineWidth(0.5);
+    doc.line(14, 38, 196, 38);
+
+    // Prepare table headers and rows
+    const head = [['#', 'Category', 'Client Reference', 'Payment Mode', 'Date', 'Amount']];
+    let grandTotal = 0;
+    const body = expenseList.map((e, index) => {
+      const amt = parseFloat(e.amount);
+      grandTotal += amt;
+      return [
+        index + 1,
+        e.category,
+        e.client?.name || 'General Operational',
+        e.payment_mode,
+        e.expense_date,
+        `$${amt.toFixed(2)}`
+      ];
+    });
+
+    // Draw Table
+    (doc as any).autoTable({
+      head: head,
+      body: body,
+      startY: 44,
+      theme: 'striped',
+      headStyles: {
+        fillColor: [79, 70, 229], // Indigo header fill
+        textColor: [255, 255, 255],
+        fontStyle: 'bold'
+      },
+      styles: {
+        font: 'helvetica',
+        fontSize: 9,
+        cellPadding: 3
+      },
+      columnStyles: {
+        0: { cellWidth: 10 },
+        5: { halign: 'right', fontStyle: 'bold' }
+      },
+      didDrawPage: (data: any) => {
+        // Footer: Page numbers
+        const str = 'Page ' + (doc as any).internal.getNumberOfPages();
+        doc.setFontSize(8);
+        doc.setTextColor(148, 163, 184);
+        doc.text(str, data.settings.margin.left, (doc.internal as any).pageSize.height - 10);
+      }
+    });
+
+    // Add Grand Total summary at the end of table
+    const finalY = (doc as any).lastAutoTable.finalY + 10;
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 41, 59);
+    doc.text(`Total Expenditures Count: ${expenseList.length}`, 14, finalY);
+    doc.text(`Grand Total Outflow: $${grandTotal.toFixed(2)}`, 140, finalY);
+
+    // Save PDF file
+    doc.save(`biztrack_expenses_report_${new Date().toISOString().split('T')[0]}.pdf`);
+    this.toastService.showSuccess('PDF Report downloaded successfully.');
   }
 }

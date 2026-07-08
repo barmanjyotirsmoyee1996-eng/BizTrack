@@ -203,34 +203,57 @@
         </div>
 
         <!-- Expense Breakdown Widget -->
-        <div class="card border-0 shadow-sm rounded-4">
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
           <div class="card-header bg-white py-3 border-0 rounded-top-4">
             <h5 class="fw-bold mb-0 text-dark">Budget Allocations</h5>
           </div>
-          <div class="card-body p-4">
-            <div *ngFor="let item of expenseBreakdown" class="mb-3">
-              <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="fw-semibold small text-dark">{{ item.category }}</span>
-                <span class="text-secondary small">{{ item.percentage }}% (${{ item.amount | number:'1.0-0' }})</span>
-              </div>
-              <div class="progress" style="height: 6px;">
-                <div class="progress-bar rounded-pill" role="progressbar" 
-                     [style.width.%]="item.percentage" 
-                     [ngClass]="{
-                       'bg-primary': item.category === 'Marketing',
-                       'bg-purple': item.category === 'Travel',
-                       'bg-success': item.category === 'Software & Tools',
-                       'bg-warning': item.category === 'Utilities',
-                       'bg-info': item.category === 'Office Supplies',
-                       'bg-danger': item.category === 'Salaries',
-                       'bg-secondary': item.category === 'Other'
-                     }">
-                </div>
-              </div>
+          <div class="card-body p-3">
+            <div *ngIf="expenseBreakdown.length > 0; else noChart" class="d-flex justify-content-center">
+              <apx-chart
+                style="width: 100%;"
+                [series]="expenseChartOptions.series"
+                [chart]="expenseChartOptions.chart"
+                [labels]="expenseChartOptions.labels"
+                [colors]="expenseChartOptions.colors"
+                [legend]="expenseChartOptions.legend"
+                [dataLabels]="expenseChartOptions.dataLabels"
+                [stroke]="expenseChartOptions.stroke"
+                [plotOptions]="expenseChartOptions.plotOptions"
+              ></apx-chart>
             </div>
-            <div *ngIf="expenseBreakdown.length === 0" class="text-center text-muted py-4 small">
-              No categories mapped. Log expenses to view breakdown.
+            <ng-template #noChart>
+              <div class="text-center text-muted py-4 small">
+                No categories mapped. Log expenses to view breakdown.
+              </div>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Meeting Stats Widget -->
+        <div class="card border-0 shadow-sm rounded-4">
+          <div class="card-header bg-white py-3 border-0 rounded-top-4">
+            <h5 class="fw-bold mb-0 text-dark">Meeting Type Distribution</h5>
+          </div>
+          <div class="card-body p-3">
+            <div *ngIf="stats.upcoming_meetings.length > 0; else noMeetingsChart">
+              <apx-chart
+                style="width: 100%;"
+                [series]="meetingChartOptions.series"
+                [chart]="meetingChartOptions.chart"
+                [colors]="meetingChartOptions.colors"
+                [plotOptions]="meetingChartOptions.plotOptions"
+                [dataLabels]="meetingChartOptions.dataLabels"
+                [stroke]="meetingChartOptions.stroke"
+                [xaxis]="meetingChartOptions.xaxis"
+                [yaxis]="meetingChartOptions.yaxis"
+                [grid]="meetingChartOptions.grid"
+              ></apx-chart>
             </div>
+            <ng-template #noMeetingsChart>
+              <div class="text-center text-muted py-4 small">
+                No scheduled meetings to analyze.
+              </div>
+            </ng-template>
           </div>
         </div>
       </div>

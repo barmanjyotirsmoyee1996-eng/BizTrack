@@ -11,8 +11,11 @@ export class MeetingService {
 
   constructor(private http: HttpClient) {}
 
-  getMeetings(page: number = 1, status: string = '', search: string = ''): Observable<any> {
+  getMeetings(page: number = 1, status: string = '', search: string = '', all: boolean = false): Observable<any> {
     let params = new HttpParams().set('page', page.toString());
+    if (all) {
+      params = params.set('all', 'true');
+    }
     if (status) {
       params = params.set('status', status);
     }

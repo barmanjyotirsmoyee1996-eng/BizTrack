@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
 import { MeetingService } from '../services/meeting.service';
 import { ClientService } from '../services/client.service';
 import { ToastService } from '../services/toast.service';
@@ -27,6 +29,8 @@ export class MeetingsComponent implements OnInit {
 
   showDeleteModal = false;
   meetingToDelete: any = null;
+  isCalendarView = false;
+  calendarOptions: any;
 
   constructor(
     private fb: FormBuilder,
@@ -130,6 +134,77 @@ export class MeetingsComponent implements OnInit {
     this.showModal = false;
   }
 
+  openAddModalWithDate(dateStr: string) {
+    this.isEditMode = false;
+    this.selectedMeetingId = null;
+    this.submitted = false;
+    this.meetingForm.reset({
+      client_id: '',
+      meeting_date: dateStr,
+      meeting_time: '10:00',
+      meeting_type: 'Online',
+      status: 'Upcoming',
+      notes: ''
+    });
+    this.showModal = true;
+  }
+
+  toggleViewMode() {
+    this.isCalendarView = !this.isCalendarView;
+    this.refreshData();
+  }
+
+  loadAllMeetingsForCalendar() {
+    this.loading = true;
+    this.meetingService.getMeetings(1, '', '', true).subscribe({
+      next: (data) => {
+        this.meetings = data.data;
+        this.initCalendar();
+        this.loading = false;
+      },
+      error: () => {
+        this.toastService.showError('Failed to load calendar events.');
+        this.loading = false;
+      }
+    });
+  }
+
+  initCalendar() {
+    this.calendarOptions = {
+      plugins: [dayGridPlugin, interactionPlugin],
+      initialView: 'dayGridMonth',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,dayGridWeek'
+      },
+      events: this.meetings.map(m => ({
+        id: m.id.toString(),
+        title: `${m.client?.name || 'Meeting'} (${m.meeting_time})`,
+        date: m.meeting_date,
+        color: m.meeting_type === 'Online' ? '#0ea5e9' : '#4f46e5',
+        extendedProps: { meeting: m }
+      })),
+      eventClick: (info: any) => {
+        const meeting = info.event.extendedProps['meeting'];
+        this.openEditModal(meeting);
+      },
+      dateClick: (info: any) => {
+        this.openAddModalWithDate(info.dateStr);
+      },
+      height: 600,
+      themeSystem: 'bootstrap5'
+    };
+  }
+
+  refreshData() {
+    if (this.isCalendarView) {
+      this.loadAllMeetingsForCalendar();
+    } else {
+      this.loadMeetings();
+    }
+  }
+
   onSubmit() {
     this.submitted = true;
 
@@ -143,7 +218,7 @@ export class MeetingsComponent implements OnInit {
         next: () => {
           this.toastService.showSuccess('Meeting details updated.');
           this.closeModal();
-          this.loadMeetings();
+          this.refreshData();
         },
         error: (err) => {
           const errors = err.error?.errors;
@@ -157,7 +232,7 @@ export class MeetingsComponent implements OnInit {
           this.toastService.showSuccess('Meeting scheduled successfully.');
           this.closeModal();
           this.page = 1;
-          this.loadMeetings();
+          this.refreshData();
         },
         error: (err) => {
           const errors = err.error?.errors;
@@ -184,7 +259,7 @@ export class MeetingsComponent implements OnInit {
         next: () => {
           this.toastService.showSuccess('Meeting cancelled and deleted.');
           this.closeDeleteModal();
-          this.loadMeetings();
+          this.refreshData();
         },
         error: () => {
           this.toastService.showError('Failed to delete meeting.');

@@ -24,10 +24,15 @@ class MeetingController extends Controller
             });
         }
 
-        // Return sorted by date/time
-        $meetings = $query->orderBy('meeting_date', 'desc')
-                          ->orderBy('meeting_time', 'desc')
-                          ->paginate(10);
+        // Sort and support returning all records or paginated
+        $query->orderBy('meeting_date', 'desc')
+              ->orderBy('meeting_time', 'desc');
+
+        if ($request->has('all') && $request->all == 'true') {
+            return response()->json(['data' => $query->get()]);
+        }
+
+        $meetings = $query->paginate(10);
 
         return response()->json($meetings);
     }

@@ -3,6 +3,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { ToastService, Toast } from './services/toast.service';
 import { filter } from 'rxjs/operators';
+import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +21,8 @@ export class AppComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private toastService: ToastService,
-    private router: Router
+    private router: Router,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit(): void {
@@ -111,15 +113,23 @@ export class AppComponent implements OnInit {
     if (this.isLoggedIn()) {
       this.authService.logout().subscribe({
         next: () => {
-          this.toastService.showWarning('You have been logged out due to inactivity.');
+          this.toastService.show('You have been logged out due to inactivity.', 'warning');
           this.router.navigate(['/login']);
         },
         error: () => {
           this.authService.clearSession();
-          this.toastService.showWarning('Session expired due to inactivity.');
+          this.toastService.show('Session expired due to inactivity.', 'warning');
           this.router.navigate(['/login']);
         }
       });
     }
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
+
+  isDarkMode(): boolean {
+    return this.themeService.isDarkMode();
   }
 }
